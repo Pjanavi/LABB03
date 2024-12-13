@@ -1,34 +1,31 @@
 name: first Github actions # Name of the Github Actions workflow
 
-on: [push]
+on: 
+  push:
+    branches:
+      - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                python-version: [3,8,3,9]
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9] # Fixed typo in Python versions
 
-        steps: 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-            - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-            - name: Setting up Python
-              uses: actions/setup-python@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
 
-              with:
-                python-version: ${{ matrix.python-version }}
-
-            - name: Installing all the dependencies 
-              run:
-                python -m pip install --upgrade pip
-                pip install pytest
-
-
-            - name: Running tests
-              run: 
-                python -m pytest addition.py
-
-
-    
+      - name: Run tests
+        run: python -m pytest addition.py
